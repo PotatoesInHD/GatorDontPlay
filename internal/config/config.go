@@ -1,6 +1,5 @@
 package config
 
-
 import (
 	"encoding/json"
 	"fmt"
@@ -20,6 +19,7 @@ type Config struct {
 
 func (c *Config) SetUser(name string) error {
 	c.CurrentUserName = name
+	//marshals but keeps indents so easier to read the json
 	jsonBytes, err := json.MarshalIndent(c, "", "\t")
 	if err != nil {
 		return fmt.Errorf("json marshalling: %w", err)
@@ -29,8 +29,8 @@ func (c *Config) SetUser(name string) error {
 	if err != nil {
 		return err
 	}
-
-	if err = os.WriteFile(filePath, jsonBytes, 0600); err != nil{
+	//writes json to file.
+	if err = os.WriteFile(filePath, jsonBytes, 0644); err != nil{
 		return fmt.Errorf("writing file: %w", err)
 	}
 	return nil

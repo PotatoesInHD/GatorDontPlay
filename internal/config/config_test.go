@@ -32,7 +32,7 @@ func TestConfig(t *testing.T) {
 		}
 		testPath = filepath.Join(testPath, configFileName)
 		testBytes := []byte(`{"db_url": "postgres://example"}`)
-		if err := os.WriteFile(testPath, testBytes, 0600); err != nil {
+		if err := os.WriteFile(testPath, testBytes, 0644); err != nil {
 			t.Fatalf("writing test file: %v", err)
 		}
 		//its actually using funcs on the test file in fakehome temp dir
