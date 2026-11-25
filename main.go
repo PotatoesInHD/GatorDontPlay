@@ -37,8 +37,8 @@ func main() {
 
     //setup command struct
     cmd := command {
-    	name: args[1],
-     	args: args[2:],
+    name: args[1],
+    args: args[2:],
     }
 
     //run command
