@@ -4,7 +4,7 @@ package main
 import (
 	"github.com/PotatoesInHD/GatorDontPlay/internal/config"
 	"log"
-	"fmt"
+	"os"
 )
 
 
@@ -19,13 +19,31 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
-	//set config file user
-	if err = cfg.SetUser("bobs"); err != nil {
-		log.Fatalf("Error: %v", err)
+	gatorState := state {
+		configPtr: &cfg,
 	}
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatalf("Error: %v", err)
+
+	//register commands
+	cmdMap := make(map[string]func(*state, command) error)
+	cmds := commands {
+		registeredCmds: cmdMap,
 	}
-	fmt.Printf("%+v\n",cfg)
+	cmds.register("login", handlerLogin)
+
+	//get args from cli
+	args := os.Args[1:]
+    if len(args) < 2 {
+    	log.Fatal("Error: No Args Given!")
+    }
+
+    //setup command struct
+    cmd := command {
+    	name: args[0],
+     	args: args[1:],
+    }
+
+    //run command
+    if err = cmds.run(&gatorState, cmd); err != nil {
+    	log.Fatalf("Error: %v", err)
+    }
 }
