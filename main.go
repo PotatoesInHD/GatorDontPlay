@@ -24,22 +24,21 @@ func main() {
 	}
 
 	//register commands
-	cmdMap := make(map[string]func(*state, command) error)
 	cmds := commands {
-		registeredCmds: cmdMap,
+		registeredCmds: make(map[string]func(*state, command) error),
 	}
 	cmds.register("login", handlerLogin)
 
 	//get args from cli
-	args := os.Args[1:]
+	args := os.Args
     if len(args) < 2 {
     	log.Fatal("Error: No Args Given!")
     }
 
     //setup command struct
     cmd := command {
-    	name: args[0],
-     	args: args[1:],
+    	name: args[1],
+     	args: args[2:],
     }
 
     //run command
