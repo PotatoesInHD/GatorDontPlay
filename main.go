@@ -1,15 +1,19 @@
-//boot.dev blog aggregator guided project
+// boot.dev blog aggregator guided project
 package main
 
 import (
-	"github.com/PotatoesInHD/GatorDontPlay/internal/config"
+	"database/sql"
 	"log"
 	"os"
+	"github.com/PotatoesInHD/GatorDontPlay/internal/config"
+	"github.com/PotatoesInHD/GatorDontPlay/internal/database"
+	_ "github.com/lib/pq"
 )
 
 
 type state struct {
 	configPtr	*config.Config
+	dbPtr		*database.Queries
 }
 
 
@@ -23,11 +27,19 @@ func main() {
 		configPtr: &cfg,
 	}
 
+	//opening database
+    db, err := sql.Open("postgres", cfg.DbUrl)
+    if err != nil {
+    	log.Fatalf("Error opening database: %v", err)
+    }
+    gatorState.dbPtr = database.New(db)
+
 	//register commands
 	cmds := commands {
 		registeredCmds: make(map[string]func(*state, command) error),
 	}
 	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
 
 	//get args from cli
 	args := os.Args
