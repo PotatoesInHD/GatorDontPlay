@@ -33,7 +33,7 @@ func handlerLogin(s *state, cmd command) error {
 
 func handlerRegister(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
-		return errors.New("command has no arguments")
+		return errors.New("command has no argument")
 	}
 
 	userName := cmd.args[0]
@@ -84,5 +84,19 @@ func handlerUsers(s *state, cmd command) error {
 		}
 	}
 
+	return nil
+}
+
+func handlerAgg(s *state, cmd command) error {
+/* 	if len(cmd.args) == 0 {
+		return errors.New("command has no argument")
+		}
+
+	cmd.args[1] = "https://www.wagslane.dev/index.xml" */
+	feed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+		if err != nil {
+			return fmt.Errorf("fetch feed failed: %w", err)
+		}
+	fmt.Printf("%v", feed)
 	return nil
 }

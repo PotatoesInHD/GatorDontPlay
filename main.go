@@ -8,6 +8,7 @@ import (
 	"github.com/PotatoesInHD/GatorDontPlay/internal/config"
 	"github.com/PotatoesInHD/GatorDontPlay/internal/database"
 	_ "github.com/lib/pq"
+
 )
 
 
@@ -42,6 +43,7 @@ func main() {
 	cmds.register("register", handlerRegister)
 	cmds.register("reset", handlerReset)
 	cmds.register("users", handlerUsers)
+	cmds.register("agg", handlerAgg)
 
 	//get args from cli
 	args := os.Args
