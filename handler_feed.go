@@ -5,22 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
 	"github.com/PotatoesInHD/GatorDontPlay/internal/database"
 	"github.com/google/uuid"
 )
 
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, dbUser database.User) error {
 	argReqCount := 2
 	if len(cmd.args) < argReqCount {
 		return fmt.Errorf("addfeed command requires %d arguments", argReqCount)
-	}
-
-	//get current user information to pass into CreateFeed
-	dbUser, err := s.dbPtr.GetUser(context.Background(), s.configPtr.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("db get list of users failed: %w", err)
 	}
 
 	//load up param struct
@@ -72,7 +65,7 @@ func handlerFeeds(s *state, cmd command) error {
 }
 
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, dbUser database.User) error {
 	if len(cmd.args) == 0 {
 		return errors.New("command has no arguments")
 	}
@@ -81,12 +74,6 @@ func handlerFollow(s *state, cmd command) error {
 	dbFeed, err := s.dbPtr.GetFeedByUrl(context.Background(), cmd.args[0])
 	if err != nil {
 		return fmt.Errorf("db get feed failed: %w", err)
-	}
-
-	//get current user information
-	dbUser, err := s.dbPtr.GetUser(context.Background(), s.configPtr.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("db get user failed: %w", err)
 	}
 
 	//load up db params struct
@@ -109,13 +96,7 @@ func handlerFollow(s *state, cmd command) error {
 }
 
 
-func handlerFollowing(s *state, cmd command) error {
-	//get current user information
-	dbUser, err := s.dbPtr.GetUser(context.Background(), s.configPtr.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("db get user failed: %w", err)
-	}
-
+func handlerFollowing(s *state, cmd command, dbUser database.User) error {
 	//get feed follows for current user
 	dbFeedFollows, err := s.dbPtr.GetFeedFollowsForUser(context.Background(), dbUser.ID)
 	if err != nil {
@@ -124,6 +105,31 @@ func handlerFollowing(s *state, cmd command) error {
 
 	for _, feedFollow := range dbFeedFollows {
 		fmt.Printf("Feed: %v\nName: %v\n", feedFollow.Fname, feedFollow.Uname)
+	}
+
+	return nil
+}
+
+
+func handlerUnfollow(s *state, cmd command, dbUser database.User) error {
+	if len(cmd.args) == 0 {
+		return errors.New("command has no arguments")
+	}
+
+	//get feed by url
+	dbFeed, err := s.dbPtr.GetFeedByUrl(context.Background(), cmd.args[0])
+	if err != nil {
+		return fmt.Errorf("db get feed failed: %w", err)
+	}
+
+	//load up db params
+	dbFeedUnfollowParams := database.FeedUnfollowParams{
+		UserID: dbUser.ID,
+		FeedID: dbFeed.ID,
+	}
+
+	if err := s.dbPtr.FeedUnfollow(context.Background(), dbFeedUnfollowParams); err != nil {
+		return fmt.Errorf("db feed unfollow failed: %w", err)
 	}
 
 	return nil
