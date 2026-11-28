@@ -18,6 +18,18 @@ type state struct {
 }
 
 
+func registerCmds(cmds commands) {
+	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
+	cmds.register("reset", handlerReset)
+	cmds.register("users", handlerUsers)
+	cmds.register("agg", handlerAgg)
+	cmds.register("addfeed", handlerAddFeed)
+	cmds.register("feeds", handlerFeeds)
+	cmds.register("follow", handlerFollow)
+	cmds.register("following", handlerFollowing)
+}
+
 func main() {
 	//read config file
 	cfg, err := config.Read()
@@ -39,13 +51,7 @@ func main() {
 	cmds := commands {
 		registeredCmds: make(map[string]func(*state, command) error),
 	}
-	cmds.register("login", handlerLogin)
-	cmds.register("register", handlerRegister)
-	cmds.register("reset", handlerReset)
-	cmds.register("users", handlerUsers)
-	cmds.register("agg", handlerAgg)
-	cmds.register("addfeed", handlerAddFeed)
-	cmds.register("feeds", handlerFeeds)
+	registerCmds(cmds)
 
 	//get args from cli
 	args := os.Args

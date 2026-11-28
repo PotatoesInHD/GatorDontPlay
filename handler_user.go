@@ -22,7 +22,7 @@ func handlerLogin(s *state, cmd command) error {
 		return fmt.Errorf("db query get user failed: %w", err)
 	}
 
-	//if user existed in dbase SetUser
+	//if user existed in dbase SetUser as current user in config
 	if err := s.configPtr.SetUser(dbUser.Name); err != nil {
 		return fmt.Errorf("%w", err)
 	}
@@ -53,7 +53,7 @@ func handlerRegister(s *state, cmd command) error {
 		return fmt.Errorf("db create user failed: %w", err)
 	}
 
-	//set user as current user
+	//set user as current user in config
 	if err := s.configPtr.SetUser(dbUser.Name); err != nil {
 		return fmt.Errorf("%w", err)
 	}

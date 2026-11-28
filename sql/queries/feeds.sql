@@ -5,5 +5,12 @@ VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 
 -- name: GetFeeds :many
-SELECT feeds.*, users.name AS Uname
+SELECT
+    feeds.*,
+    users.name AS Uname
 FROM feeds LEFT JOIN users ON users.id = feeds.user_id;
+
+-- name: GetFeedByUrl :one
+ SELECT *
+ FROM feeds
+ WHERE $1 = url;
