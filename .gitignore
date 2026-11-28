@@ -34,4 +34,6 @@ go.work.sum
 
 # logs
 *.log
+
+# misc ignored files
 helpful_sql_goose_stuff.txt
