@@ -7,7 +7,7 @@ import (
 	"time"
 	"github.com/PotatoesInHD/GatorDontPlay/internal/database"
 	"github.com/google/uuid"
-	"reflect"
+
 )
 
 
@@ -90,9 +90,9 @@ func handlerUsers(s *state, cmd command) error {
 
 
 func handlerAgg(s *state, cmd command) error {
- /* 	if len(cmd.args) == 0 {
+  	if len(cmd.args) == 0 {
 		return errors.New("command has no argument")
-		} */
+		}
 	_, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
 		if err != nil {
 			return fmt.Errorf("fetch feed failed: %w", err)
@@ -103,32 +103,44 @@ func handlerAgg(s *state, cmd command) error {
 
 
 func handlerAddFeed(s *state, cmd command) error {
-	if len(cmd.args) == 0 {
-		return errors.New("command has no argument")
-		}
+	argReqCount := 2
+	if len(cmd.args) < argReqCount {
+		return fmt.Errorf("addfeed command requires %d arguments", argReqCount)
+	}
+
 	//get current user information to pass into CreateFeed
 	dbUser, err := s.dbPtr.GetUser(context.Background(), s.configPtr.CurrentUserName)
 	if err != nil {
 		return fmt.Errorf("db get list of users failed: %w", err)
 	}
+
 	//load up param struct
 	dBFeedParams := database.CreateFeedParams {
 		ID: dbUser.ID,
 		CreatedAt: dbUser.CreatedAt,
 		UpdatedAt: dbUser.UpdatedAt,
-		Name: dbUser.Name,
+		Name: cmd.args[0],
 		Url: cmd.args[1],
 		UserID: dbUser.ID,
 	}
 
-	dbFeed, err := s.dbPtr.CreateFeed(context.Background(), dBFeedParams)
+	_, err = s.dbPtr.CreateFeed(context.Background(), dBFeedParams)
 	if err != nil {
 		return fmt.Errorf("db create feed failed: %w", err)
 	}
-	//fancy way to print structs boots showed me
-	v := reflect.ValueOf(dbFeed)
-	for i := 0; i < v.NumField(); i++ {
-	fmt.Printf("%+v: %+v\n",v.Type().Field(i).Name, v.Field(i))
+
+	return nil
+}
+
+
+func handlerFeeds(s *state, cmd command) error {
+	dbFeeds, err := s.dbPtr.GetFeeds(context.Background())
+	if err != nil {
+		return fmt.Errorf("db feeds failed: %w", err)
+	}
+
+	for _, feed := range dbFeeds {
+		fmt.Printf("%v\n%v\n%v\n", feed.Name, feed.Url, feed.Uname)
 	}
 
 	return nil
