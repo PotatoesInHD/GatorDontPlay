@@ -42,7 +42,7 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 	}
 	defer res.Body.Close()
 
-	//changes io.reader in []bytes
+	//changes io.reader into []bytes
 	body, err := io.ReadAll(res.Body)
 	if res.StatusCode > 299 {
 		return nil, fmt.Errorf("response failed with status code: %d and\nbody: %s\n", res.StatusCode, body)

@@ -1,3 +1,5 @@
+# this configures sqlc and tells it where everything is.
+# sqlc uses the sql query and schema files to create type-safe go code
 version: "2"
 sql:
   - schema: "sql/schema"
